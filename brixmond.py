@@ -9,6 +9,8 @@ import configparser
 import uuid
 import queue
 from time import sleep
+import requests
+import requests.exceptions
 
 from configuration import Configuration
 from monitor import MonitorThread
@@ -21,11 +23,12 @@ parser = argparse.ArgumentParser(description="BrixIT Monitoring daemon")
 parser.add_argument("-d", "--daemon", help="Start in daemon mode", action="store_true")
 parser.add_argument("server", help="The address to reach te monitoring server")
 parser.add_argument("-f", "--fqdn", help="Override the FQDN reported to the server", default=os.uname()[1])
-parser.add_argument("-c", "--configfile", help="Override the config file to use (/etc/brixmond.conf)", default="/etc/brixmond.conf")
+parser.add_argument("-c", "--configfile", help="Override the config file to use (/etc/brixmond.conf)",
+                    default="/etc/brixmond.conf")
 args = parser.parse_args()
 
 if args.daemon:
-    loghandler = logging.handlers.RotatingFileHandler('/var/log/brixmond.log', maxBytes=1024*1024*10)
+    loghandler = logging.handlers.RotatingFileHandler('/var/log/brixmond.log', maxBytes=1024 * 1024 * 10)
     loghandler.setLevel(logging.DEBUG)
     logger.addHandler(loghandler)
     ctx = daemon.DaemonContext(files_preserve=[loghandler.stream])
@@ -82,11 +85,19 @@ load.start()
 net = MonitorThread(monitor=MonitorNetwork(), queue=result_queue)
 net.start()
 
+logger.info("Sending data packets every {} seconds".format(config.send_throttle))
+
 while True:
     packet = []
     while not result_queue.empty():
         packet.append(result_queue.get())
     if len(packet) > 0:
-        print("Sending {} packets to the server".format(len(packet)))
-        print(packet)
+        logger.debug("Sending {} packets to the server".format(len(packet)))
+        try:
+            response = requests.post("http://{}/client/packet/{}/{}".format(args.server, args.fqdn, secret),
+                                     data=packet, json=True)
+            logger.debug("Server response: {}".format(response.status_code))
+        except requests.exceptions.ConnectionError as e:
+            logger.error("Cannot connect to the server at http://{}".format(args.server))
+
     sleep(config.send_throttle)
