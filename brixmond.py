@@ -95,7 +95,7 @@ while True:
         logger.debug("Sending {} packets to the server".format(len(packet)))
         try:
             response = requests.post("http://{}/client/packet/{}/{}".format(args.server, args.fqdn, secret),
-                                     data=packet, json=True)
+                                     json=packet)
             logger.debug("Server response: {}".format(response.status_code))
         except requests.exceptions.ConnectionError as e:
             logger.error("Cannot connect to the server at http://{}".format(args.server))

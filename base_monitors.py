@@ -64,6 +64,7 @@ class MonitorNetwork(Monitor):
         self.name = "net"
 
     def get_point(self):
+        counters_old = psutil.net_io_counters().__dict__
         while True:
             sleep(60)
             conn_counters = {
@@ -92,8 +93,11 @@ class MonitorNetwork(Monitor):
                 "unknown": conn_counters["NONE"]
             }
 
+            counters = psutil.net_io_counters().__dict__
+            counters_delta = {key: counters[key] - counters_old.get(key, 0) for key in counters.keys()}
+            counters_old = counters
             result = {
-                "counters": psutil.net_io_counters().__dict__,
+                "counters": counters_delta,
                 "sockets": conn_semantic
             }
             yield result
