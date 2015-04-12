@@ -15,6 +15,8 @@ import requests.exceptions
 from configuration import Configuration
 from monitor import MonitorThread
 from monitors_base import MonitorCPU, MonitorMem, MonitorDisks, MonitorLoad, MonitorNetwork
+from monitors_webserver import MonitorApache
+
 
 logger = logging.getLogger('brixmond')
 logger.setLevel(logging.DEBUG)
@@ -84,6 +86,9 @@ load.start()
 
 net = MonitorThread(monitor=MonitorNetwork(), queue=result_queue)
 net.start()
+
+apache = MonitorThread(monitor=MonitorApache(), queue=result_queue)
+apache.start()
 
 logger.info("Sending data packets every {} seconds".format(config.send_throttle))
 
