@@ -7,6 +7,7 @@ class MonitorCPU(Monitor):
     def __init__(self):
         super().__init__()
         self.name = "cpu"
+        self.type = "point"
 
     def get_point(self):
         while True:
@@ -20,6 +21,7 @@ class MonitorMem(Monitor):
     def __init__(self):
         super().__init__()
         self.name = "mem"
+        self.type = "point"
 
     def get_point(self):
         while True:
@@ -31,6 +33,7 @@ class MonitorLoad(Monitor):
     def __init__(self):
         super().__init__()
         self.name = "load"
+        self.type = "point"
 
     def get_point(self):
         while True:
@@ -44,6 +47,7 @@ class MonitorDisks(Monitor):
     def __init__(self):
         super().__init__()
         self.name = "disks"
+        self.type = "point"
 
     def get_point(self):
         while True:
@@ -62,6 +66,7 @@ class MonitorNetwork(Monitor):
     def __init__(self):
         super().__init__()
         self.name = "net"
+        self.type = "point"
 
     def get_point(self):
         counters_old = psutil.net_io_counters().__dict__

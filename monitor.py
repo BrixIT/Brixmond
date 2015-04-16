@@ -7,6 +7,7 @@ class Monitor(object):
 
     def __init__(self):
         self.name = "monitor"
+        self.type = "point"
         self.interval = 1
 
     def get_point(self):
@@ -19,6 +20,7 @@ class MonitorThread(threading.Thread):
         super().__init__()
         self.monitor = monitor
         self.name = monitor.name
+        self.type = monitor.type
         self.queue = queue
 
     def run(self):
@@ -26,5 +28,6 @@ class MonitorThread(threading.Thread):
             self.queue.put({
                 "name": self.name,
                 "stamp": datetime.datetime.utcnow().isoformat(),
-                "point": json.dumps(point)
+                "point": json.dumps(point),
+                "type": self.type
             })
