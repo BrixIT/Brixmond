@@ -1,6 +1,7 @@
 apache-log-parser==1.5.0
 docutils==0.12
 lockfile==0.10.2
+netifaces==0.10.4
 psutil==2.2.1
 py-cpuinfo==0.1.4
 python-daemon==2.0.5
