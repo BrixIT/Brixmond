@@ -15,7 +15,6 @@ import requests.exceptions
 from configuration import Configuration
 from monitor import MonitorThread
 from monitors_base import MonitorCPU, MonitorMem, MonitorDisks, MonitorLoad, MonitorNetwork
-from monitors_webserver import MonitorApache
 from monitors_info import MonitorProcesses, MonitorIP
 
 
@@ -73,29 +72,29 @@ result_queue = queue.Queue()
 
 logger.info("Starting threads")
 
-cpu = MonitorThread(monitor=MonitorCPU(), queue=result_queue)
-cpu.start()
+monitors = []
 
-mem = MonitorThread(monitor=MonitorMem(), queue=result_queue)
-mem.start()
 
-disks = MonitorThread(monitor=MonitorDisks(), queue=result_queue)
-disks.start()
+def start_monitor(monitor):
+    monitor_thread = MonitorThread(monitor=monitor, queue=result_queue)
+    monitors.append(monitor_thread)
+    monitor_thread.start()
 
-load = MonitorThread(monitor=MonitorLoad(), queue=result_queue)
-load.start()
+# start all base monitors
+start_monitor(MonitorCPU())
+start_monitor(MonitorMem())
+start_monitor(MonitorDisks())
+start_monitor(MonitorLoad())
+start_monitor(MonitorNetwork())
+start_monitor(MonitorIP())
+start_monitor(MonitorProcesses())
 
-net = MonitorThread(monitor=MonitorNetwork(), queue=result_queue)
-net.start()
+# TODO: Add enable/disable monitor in config
+if True:
+    from monitors_webserver import MonitorApache
+    start_monitor(MonitorApache())
 
-apache = MonitorThread(monitor=MonitorApache(), queue=result_queue)
-apache.start()
 
-processes = MonitorThread(monitor=MonitorProcesses(), queue=result_queue)
-processes.start()
-
-ip = MonitorThread(monitor=MonitorIP(), queue=result_queue)
-ip.start()
 
 logger.info("Sending data packets every {} seconds".format(config.send_throttle))
 
