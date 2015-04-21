@@ -43,25 +43,6 @@ class MonitorLoad(Monitor):
             yield load
 
 
-class MonitorDisks(Monitor):
-    def __init__(self):
-        super().__init__()
-        self.name = "disks"
-        self.type = "point"
-
-    def get_point(self):
-        while True:
-            sleep(60 * 10)
-            result = {}
-            for part in psutil.disk_partitions():
-                result[part.device] = {
-                    "mountpoint": part.mountpoint,
-                    "fstype": part.fstype,
-                    "usage": psutil.disk_usage(part.mountpoint).__dict__
-                }
-            yield result
-
-
 class MonitorNetwork(Monitor):
     def __init__(self):
         super().__init__()

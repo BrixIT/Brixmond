@@ -14,8 +14,8 @@ import requests.exceptions
 
 from configuration import Configuration
 from monitor import MonitorThread
-from monitors_base import MonitorCPU, MonitorMem, MonitorDisks, MonitorLoad, MonitorNetwork
-from monitors_info import MonitorProcesses, MonitorIP
+from monitors_base import MonitorCPU, MonitorMem, MonitorLoad, MonitorNetwork
+from monitors_info import MonitorProcesses, MonitorIP, MonitorDisks
 
 
 logger = logging.getLogger('brixmond')

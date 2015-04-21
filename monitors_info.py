@@ -45,3 +45,23 @@ class MonitorIP(Monitor):
                     result[interface] = block
             yield result
             sleep(60)
+
+
+class MonitorDisks(Monitor):
+    def __init__(self):
+        super().__init__()
+        self.name = "disks"
+        self.type = "info"
+
+    def get_point(self):
+        while True:
+            result = []
+            for part in psutil.disk_partitions():
+                result.append({
+                    "mountpoint": part.mountpoint,
+                    "device": part.device,
+                    "fstype": part.fstype,
+                    "usage": psutil.disk_usage(part.mountpoint).__dict__
+                })
+            yield result
+            sleep(60 * 10)
