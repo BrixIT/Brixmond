@@ -93,9 +93,9 @@ start_monitor(MonitorProcesses())
 if True:
     try:
         from monitors_webserver import MonitorApache
+        start_monitor(MonitorApache())
     except Exception:
         logger.error("Cannot load Apache monitor. Python 3.3 required.")
-    start_monitor(MonitorApache())
 
 logger.info("Sending data packets every {} seconds".format(config.send_throttle))
 
