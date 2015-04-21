@@ -13,6 +13,10 @@ class Configuration(object):
         self.logger = logger
         self.send_throttle = 120
 
+        self.monitor_enabled = {
+            "apache": False
+        }
+
     def fetch(self):
         configpath = "http://{}/client/config/{}/{}".format(self.server, self.fqdn, self.secret)
         self.logger.debug("Fetching {}".format(configpath))
@@ -35,6 +39,7 @@ class Configuration(object):
                 else:
                     self.logger.info("Config download successful")
                     self.send_throttle = server_config["send_throttle"]
+                    self.monitor_enabled = server_config["monitor_enabled"]
             else:
                 self.logger.error("Server error {} at http://{}".format(response.status_code, self.server))
                 exit(1)
