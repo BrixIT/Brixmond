@@ -20,11 +20,12 @@ class Configuration(object):
     def fetch(self):
         configpath = "http://{}/client/config/{}/{}".format(self.server, self.fqdn, self.secret)
         self.logger.debug("Fetching {}".format(configpath))
-
+        cpu_info = cpuinfo.get_cpu_info()
         sysinfo = {
             "arch": platform.machine(),
             "dist": " ".join(list(platform.linux_distribution())),
-            "cpu": cpuinfo.get_cpu_info()["brand"]
+            "cpu": cpu_info["brand"],
+            "cores": cpu_info["count"]
         }
 
         try:
