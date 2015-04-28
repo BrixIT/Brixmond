@@ -32,7 +32,7 @@ class Lynis(object):
 
     @staticmethod
     def get_report():
-        call(["lynis", "--auditor=Brixmond", "-Q"])
+        call(["lynis", "--auditor Brixmond", "-Q"])
 
         report_file = ConfigParserMultiOpt()
         report_file.read("/var/log/lynis-report.dat")
