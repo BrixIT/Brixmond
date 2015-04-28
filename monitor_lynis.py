@@ -4,6 +4,7 @@ import sys
 from configparser import DuplicateOptionError, DuplicateSectionError, MissingSectionHeaderError
 from time import sleep
 import shutil
+import os
 from subprocess import call
 
 
@@ -24,15 +25,25 @@ class MonitorLynis(Monitor):
 class Lynis(object):
     @staticmethod
     def installed():
-        if hasattr(shutil, 'which'):
-            return not shutil.which("lynis") is None
-        else:
-            print("Lynis monitor requires python3.3 or newer")
-            return False
+        result = False
+        if hasattr(shutil, 'which') and shutil.which("lynis") is not None:
+            result = True
+
+        if os.path.isfile("/usr/bin/lynis"):
+            result = True
+
+        if os.path.isfile("/opt/lynis/lynis"):
+            result = True
+
+        return result
 
     @staticmethod
     def get_report():
-        call(["lynis", "--auditor", "Brixmond", "-Q"])
+        if os.path.isfile("/opt/lynis/lynis"):
+            call(["/opt/lynis/lynis", "--auditor", "Brixmond", "-Q"], cwd="/opt/lynis")
+        else:
+            call(["lynis", "--auditor", "Brixmond", "-Q"])
+
         report_format = "old"
         with open("/var/log/lynis-report.dat") as report:
             report_string = report.read()
