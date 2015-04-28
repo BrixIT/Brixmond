@@ -33,9 +33,11 @@ class Lynis(object):
     @staticmethod
     def get_report():
         call(["lynis", "--auditor", "Brixmond", "-Q"])
+        report_format = "old"
         with open("/var/log/lynis-report.dat") as report:
             report_string = report.read()
             if "[General]" not in report_string:
+                report_format = "new"
                 report_string = "[General]\n" + report_string
 
         report_file = ConfigParserMultiOpt()
@@ -46,7 +48,12 @@ class Lynis(object):
             if report_file.has_option(section, "warning[]"):
                 warnings = report_file[section]["warning[]"]
                 for warning in warnings:
-                    name, prio, description, *rest = warning.split("|")
+                    if report_format == "new":
+                        name, description, *rest = warning.split("|")
+                        prio = "U"
+                    else:
+                        name, prio, description, *rest = warning.split("|")
+
                     report_warnings[name] = {
                         "prio": prio,
                         "description": description
@@ -54,7 +61,11 @@ class Lynis(object):
             if report_file.has_option(section, "suggestion[]"):
                 suggestions = report_file[section]["suggestion[]"]
                 for suggestion in suggestions:
-                    name, prio, description, *rest = suggestion.split("|")
+                    if report_format == "new":
+                        name, description, *rest = suggestion.split("|")
+                        prio = "U"
+                    else:
+                        name, prio, description, *rest = suggestion.split("|")
                     report_suggestions[name] = {
                         "prio": prio,
                         "description": description
