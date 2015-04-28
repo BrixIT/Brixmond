@@ -11,6 +11,7 @@ class MonitorApache(Monitor):
     def __init__(self):
         super().__init__()
         self.name = "apache"
+        self.type = "point"
         self.accesslogs, self.errorlogs = self.get_log_files()
         self.logformats = self.get_log_formats()
 
