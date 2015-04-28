@@ -5,7 +5,7 @@ from configparser import DuplicateOptionError, DuplicateSectionError, MissingSec
 from time import sleep
 import shutil
 import os
-from subprocess import call
+from subprocess import call, DEVNULL
 
 
 class MonitorLynis(Monitor):
@@ -40,9 +40,9 @@ class Lynis(object):
     @staticmethod
     def get_report():
         if os.path.isfile("/opt/lynis/lynis"):
-            call(["/opt/lynis/lynis", "--auditor", "Brixmond", "-Q"], cwd="/opt/lynis")
+            call(["/opt/lynis/lynis", "--auditor", "Brixmond", "-Q"], cwd="/opt/lynis", stdout=DEVNULL)
         else:
-            call(["lynis", "--auditor", "Brixmond", "-Q"])
+            call(["lynis", "--auditor", "Brixmond", "-Q"], stdout=DEVNULL)
 
         report_format = "old"
         with open("/var/log/lynis-report.dat") as report:
