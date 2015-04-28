@@ -91,15 +91,18 @@ start_monitor(MonitorNetwork())
 start_monitor(MonitorIP())
 start_monitor(MonitorProcesses())
 if Lynis.installed():
+    logger.info("Starting Lynis monitor")
     start_monitor(MonitorLynis())
 
 if MonitorVarnish.installed():
+    logger.info("Starting Varnish monitor")
     start_monitor(MonitorVarnish())
 
 # TODO: Add enable/disable monitor in config
 if True:
     try:
         from monitors_webserver import MonitorApache
+        logger.info("Starting Apache monitor")
         start_monitor(MonitorApache())
     except Exception:
         logger.error("Cannot load Apache monitor. Python 3.3 required.")
