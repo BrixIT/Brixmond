@@ -2,6 +2,9 @@ from monitor import Monitor
 import os, glob, re
 from time import sleep
 import apache_log_parser
+import subprocess
+import json
+import shutil
 
 
 class MonitorApache(Monitor):
@@ -10,6 +13,17 @@ class MonitorApache(Monitor):
         self.name = "apache"
         self.accesslogs, self.errorlogs = self.get_log_files()
         self.logformats = self.get_log_formats()
+
+    @staticmethod
+    def installed():
+        result = False
+        if hasattr(shutil, 'which') and shutil.which("apachectl") is not None:
+            result = True
+
+        if os.path.isfile("/usr/sbin/apachectl"):
+            result = True
+
+        return result
 
     def get_log_formats(self):
         regex_logformat = re.compile(r'^[\t ]*LogFormat[\t ]+"(.+)"[\t ]+(.+)', re.MULTILINE | re.IGNORECASE)
@@ -78,3 +92,55 @@ class MonitorApache(Monitor):
                             result[status] = 1
             yield result
             sleep(60)
+
+
+class MonitorVarnish(Monitor):
+    def __init__(self):
+        super().__init__()
+        self.name = "varnish"
+        self.type = "point"
+        self.lastStat = self.get_stats()
+
+    @staticmethod
+    def installed():
+        result = False
+        if hasattr(shutil, 'which') and shutil.which("varnishstat") is not None:
+            result = True
+
+        if os.path.isfile("/usr/bin/varnishstat"):
+            result = True
+
+        return result
+
+    def get_point(self):
+        while True:
+            stat = self.get_stats()
+            yield self.diff_stats(stat, self.lastStat)
+            self.lastStat = stat
+            sleep(60)
+
+    def diff_stats(self, a, b):
+        return {
+            'cache': {
+                'miss': a['cache']['miss'] - b['cache']['miss'],
+                'hit': a['cache']['hit'] - b['cache']['hit']
+            },
+            'conn': {
+                'conn': a['conn']['conn'] - b['conn']['conn'],
+                'drop': a['conn']['drop'] - b['conn']['drop']
+            }
+        }
+
+    def get_stats(self):
+        stats_raw = subprocess.Popen(["/usr/bin/varnishstat", "-j"], stdout=subprocess.PIPE).stdout.read()
+        stats = json.loads(stats_raw)
+        return {
+            'cache': {
+                'miss': stats['MAIN.cache_miss']['value'],
+                'hit': stats['MAIN.cache_hit']['value']
+            },
+            'conn': {
+                'conn': stats['MAIN.sess_conn']['value'],
+                'drop': stats['MAIN.sess_drop']['value']
+            }
+        }

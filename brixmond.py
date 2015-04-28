@@ -17,6 +17,7 @@ from monitor import MonitorThread
 from monitors_base import MonitorCPU, MonitorMem, MonitorLoad, MonitorNetwork
 from monitors_info import MonitorProcesses, MonitorIP, MonitorDisks
 from monitor_lynis import MonitorLynis, Lynis
+from monitors_webserver import MonitorApache, MonitorVarnish
 
 
 logger = logging.getLogger('brixmond')
@@ -91,6 +92,12 @@ start_monitor(MonitorIP())
 start_monitor(MonitorProcesses())
 if Lynis.installed():
     start_monitor(MonitorLynis())
+
+if MonitorVarnish.installed():
+    start_monitor(MonitorVarnish())
+
+if MonitorApache.installed():
+    start_monitor(MonitorApache())
 
 # TODO: Add enable/disable monitor in config
 if True:
