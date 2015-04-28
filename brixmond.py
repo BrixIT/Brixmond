@@ -96,9 +96,6 @@ if Lynis.installed():
 if MonitorVarnish.installed():
     start_monitor(MonitorVarnish())
 
-if MonitorApache.installed():
-    start_monitor(MonitorApache())
-
 # TODO: Add enable/disable monitor in config
 if True:
     try:
