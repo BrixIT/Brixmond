@@ -1,0 +1,9 @@
+[Unit]
+Description=Brixmond Client
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/brixmond/brixmond.py [your-brixmond-server]
+WorkingDirectory=/opt/brixmond
+
+[Install]
+WantedBy=multi-user.target
