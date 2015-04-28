@@ -24,7 +24,11 @@ class MonitorLynis(Monitor):
 class Lynis(object):
     @staticmethod
     def installed():
-        return not shutil.which("lynis") is None
+        if hasattr(shutil, 'which'):
+            return not shutil.which("lynis") is None
+        else:
+            print("Lynis monitor requires python3.3 or newer")
+            return False
 
     @staticmethod
     def get_report():
