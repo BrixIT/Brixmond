@@ -54,6 +54,8 @@ class Lynis(object):
         return {
             "suggestions": report_suggestions,
             "warnings": report_warnings,
+            "warning_count": len(report_warnings),
+            "suggestion_count": len(report_suggestions)
         }
 
 
