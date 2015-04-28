@@ -33,9 +33,15 @@ class Lynis(object):
     @staticmethod
     def get_report():
         call(["lynis", "--auditor", "Brixmond", "-Q"])
+        with open("/var/log/lynis-report.dat") as report:
+            if "[General]" not in report:
+                report_string = "[General]\n"
+                report_string += report.read()
+            else:
+                report_string = report.read()
 
         report_file = ConfigParserMultiOpt()
-        report_file.read("/var/log/lynis-report.dat")
+        report_file.read_string(report_string)
         report_warnings = {}
         report_suggestions = {}
         for section in report_file.sections():
