@@ -134,14 +134,24 @@ class MonitorVarnish(Monitor):
 
     def get_stats(self):
         stats_raw = subprocess.Popen(["/usr/bin/varnishstat", "-j"], stdout=subprocess.PIPE).stdout.read()
-        stats = json.loads(stats_raw)
+        stats = json.loads(stats_raw.decode('UTF-8'))
+        if 'MAIN.cache_miss' in stats:
+            cache_miss = 'MAIN.cache_miss'
+            cache_hit = 'MAIN.cache_hit'
+            conn_conn = 'MAIN.sess_conn'
+            conn_drop = 'MAIN.sess_drop'
+        else:
+            cache_miss = 'cache_miss'
+            cache_hit = 'cache_hit'
+            conn_conn = 'client_conn'
+            conn_drop = 'client_drop'
         return {
             'cache': {
-                'miss': stats['MAIN.cache_miss']['value'],
-                'hit': stats['MAIN.cache_hit']['value']
+                'miss': stats[cache_miss]['value'],
+                'hit': stats[cache_hit]['value']
             },
             'conn': {
-                'conn': stats['MAIN.sess_conn']['value'],
-                'drop': stats['MAIN.sess_drop']['value']
+                'conn': stats[conn_conn]['value'],
+                'drop': stats[conn_drop]['value']
             }
         }

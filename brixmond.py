@@ -92,7 +92,7 @@ start_monitor(MonitorIP())
 start_monitor(MonitorProcesses())
 if Lynis.installed():
     logger.info("Starting Lynis monitor")
-    start_monitor(MonitorLynis())
+    #start_monitor(MonitorLynis())
 
 if MonitorVarnish.installed():
     logger.info("Starting Varnish monitor")
