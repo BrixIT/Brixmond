@@ -121,6 +121,9 @@ class MonitorVarnish(Monitor):
             sleep(60)
 
     def diff_stats(self, a, b):
+        if b['conn']['conn'] > a['conn']['conn']:
+            # Varnish is restarted
+            return a
         return {
             'cache': {
                 'miss': a['cache']['miss'] - b['cache']['miss'],
