@@ -5,6 +5,7 @@ import apache_log_parser
 import subprocess
 import json
 import shutil
+import copy
 
 
 class MonitorApache(Monitor):
@@ -123,7 +124,7 @@ class MonitorVarnish(Monitor):
     def diff_stats(self, a, b):
         if b['conn']['conn'] > a['conn']['conn']:
             # Varnish is restarted
-            return a
+            return copy.deepcopy(a)
         return {
             'cache': {
                 'miss': a['cache']['miss'] - b['cache']['miss'],
